@@ -1,0 +1,35 @@
+//map imu ports (":" char cannot be escaped)
+ 
+sudo ln -s /dev/iio:device0 /dev/iio_device0
+sudo ln -s /dev/iio:device1 /dev/iio_device1
+sudo ln -s /dev/iio:device2 /dev/iio_device2
+ 
+//run docker container & add the devices
+ 
+scripts/docker_run.sh \
+  --privileged \
+  --device=/dev/video0:/dev/video0 \
+  --device=/dev/video1:/dev/video1 \
+  --device=/dev/video2:/dev/video2 \
+  --device=/dev/iio_device0:/dev/iio_device0 \
+  --device=/dev/iio_device1:/dev/iio_device1 \
+  --device=/dev/iio_device2:/dev/iio_device2 \
+  -v ~/Documents/docker-data:/root/my_data \
+  -v /sys:/sys:rw \
+  -v /dev/bus/usb:/dev/bus/usb \
+  -c dustynv/ros:humble-desktop-l4t-r32.7.1
+ 
+// install librealsense2
+ 
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
+ 
+add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
+ 
+apt-get install librealsense2-utils -y
+apt-get install librealsense2-dev -y
+ 
+//remap ports
+ 
+ln -s /dev/iio_device0 /dev/iio:device0
+ln -s /dev/iio_device1 /dev/iio:device1
+ln -s /dev/iio_device2 /dev/iio:device2
