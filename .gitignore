@@ -1,0 +1,8 @@
+#ignore files in install, build, log
+ros2_ws/install/*
+ros2_ws/build/*
+ros2_ws/log/*
+*__pycache__*
+
+# ignore external cloned packages
+ros2_ws/src/vendor/autonomous-robot/

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rover_state_estimation</name>
+  <version>0.0.1</version>
+  <description>Fuses laser odometry (rf2o) and IMU into a single /odom via a robot_localization EKF.</description>
+  <maintainer email="allendevaraj33333@gmail.com">The2xMan</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>rf2o_laser_odometry</exec_depend>
+  <exec_depend>rover_description</exec_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,41 @@
+fixed_frame "map"
+camera 0 0.5 5 0 0 0 250
+grid 0
+display "AccelStamped" 0 0 ""
+display "CameraInfo" 0 0 ""
+display "Effort" 0 0 ""
+display "FluidPressure" 0 0 ""
+display "GridCells" 0 0 ""
+display "Illuminance" 0 0 ""
+# display "Image" 1 1 ""
+# config "Image" "/camera/color/image_raw" 1 0.05 255 255 255 "Flat" 0 0 "Z" "Points" 10
+# Image feed off — saves CPU/bandwidth and reduces UI glitches on constrained robots
+display "Image" 0 0 ""
+display "LaserScan" 1 1 ""
+config "LaserScan" "/scan" 1 0.05 255 255 255 "Flat" 1 0 "Z" "Points" 10
+display "Map" 1 1 "/map"
+config "Map" "/map" 1 0.7 255 255 255 "Flat" 0 0 "Z" "Points" 10
+display "Marker" 0 0 ""
+display "MarkerArray" 0 0 ""
+display "Nav2" 0 0 ""
+display "MotionPlanning" 0 0 ""
+display "Odometry" 0 0 ""
+display "Path" 0 0 ""
+display "PointCloud" 0 0 ""
+display "PointCloud2" 0 0 ""
+display "PointStamped" 0 0 ""
+display "Polygon" 0 0 ""
+display "Pose" 0 0 ""
+display "PoseArray" 0 0 ""
+display "PoseWithCovariance" 0 0 ""
+display "Range" 0 0 ""
+display "RelativeHumidity" 0 0 ""
+display "Rosbag" 0 0 ""
+display "RobotModel" 0 0 "/robot_description"
+config "RobotModel" "/robot_description" 1 0.05 255 255 255 "Flat" 0 0 "Z" "Points" 10
+display "Temperature" 0 0 ""
+display "Teleop" 0 0 "/cmd_vel"
+config "Teleop" "/cmd_vel" 1 0.05 255 255 255 "Flat" 0 0 "Z" "Points" 10
+display "TF" 0 0 ""
+display "TwistStamped" 0 0 ""
+display "Wrench" 0 0 ""

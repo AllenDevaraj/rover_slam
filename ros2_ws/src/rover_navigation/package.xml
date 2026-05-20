@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rover_navigation</name>
+  <version>0.0.1</version>
+  <description>Plans a path to a goal (A*) and follows it (pure pursuit): /goal_pose -> /plan -> /cmd_vel.</description>
+  <maintainer email="allendevaraj33333@gmail.com">The2xMan</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>rover_description</exec_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,59 @@
+# Pre-migration baseline (recorded 2026-05-21)
+
+NOTE: the on-disk ros2_ws/install was STALE (predates several entry points:
+mal_planner/* entirely, robo_rover velocity_controller, robo_teleop joystick_teleop,
+and my_gui_pkg gui_node were all absent). Therefore the BASELINE OF RECORD below is
+derived from the SOURCE manifests (setup.py / CMakeLists.txt), not the install.
+A full clean rebuild is deferred to the final phase (Task 15).
+
+## Authoritative legacy runtime entry points (parity target)
+color_follower  : follower_node
+line_follower   : follower_node, stall_detector   (loop_closure_detector.py present, module-only)
+mal_hw3_pkg     : lidar_wall_stop, pid_control_node
+robo_realsense  : ros_stream
+robo_rover      : rover_node, velocity_controller, imu_calib_values   (auto_lidar_node.py present, module-only)
+robo_teleop     : keyboard_teleop, joystick_teleop
+my_gui_pkg      : gui_node
+mal_planner     : astar_planner, pure_pursuit, fake_odom, calibrate_velocity, save_map, goal_pub, debug_vel
+terminal_rviz   : terminal_rviz_node
+main_mal_launch : (launch only)
+
+## Migration crosswalk (old  ->  new package : new executable)
+follower_node (color)   -> rover_behaviors : color_follower
+follower_node (line)    -> rover_behaviors : line_follower
+stall_detector          -> rover_behaviors : stall_detector
+loop_closure_detector*  -> rover_behaviors : lap_monitor        (*promoted to console_script)
+lidar_wall_stop         -> rover_behaviors : wall_stop
+pid_control_node        -> rover_behaviors : wall_follow_pid
+auto_lidar_node*        -> rover_behaviors : auto_lidar         (*promoted to console_script)
+ros_stream              -> rover_camera : ros_stream
+rover_node              -> rover_base : rover_node
+velocity_controller     -> rover_base : velocity_controller
+imu_calib_values        -> rover_tools : imu_calib
+gui_node                -> rover_gui : gui_node
+keyboard_teleop         -> rover_teleop : keyboard_teleop
+joystick_teleop         -> rover_teleop : joystick_teleop
+astar_planner           -> rover_navigation : astar_planner
+pure_pursuit            -> rover_navigation : pure_pursuit
+goal_pub                -> rover_navigation : goal_pub
+fake_odom               -> rover_tools : fake_odom
+calibrate_velocity      -> rover_tools : calibrate_velocity
+debug_vel               -> rover_tools : debug_vel
+save_map                -> rover_localization : save_map
+terminal_rviz_node      -> rover_terminal_viz : terminal_rviz_node
+
+## mal_startup.launch.py node graph (real backend, reproduce in rover_bringup/rover.launch.py)
+robo_realsense/ros_stream                       -> rover_camera/ros_stream
+rplidar view_mal_rplidar.launch.py              (vendored, resolved by name)
+tf2_ros static_transform_publisher base_link->laser
+tf2_ros static_transform_publisher base_link->imu_link
+robot_localization/ekf_node (ekf.yaml)          -> rover_state_estimation/state_estimation.launch.py
+slam_toolbox/async_slam_toolbox_node            (vendored, resolved by name)
+robo_rover/rover_launch.py (base)               -> rover_base/base.launch.py
+
+## Vendoring mechanics (discovered 2026-05-21)
+- slam_toolbox, rplidar_ros, rf2o_laser_odometry  : tracked files -> `git mv` to vendor/
+- autonomous-robot                                : GITIGNORED external clone (own .git) -> plain `mv` + update .gitignore path
+
+## Stray file noted: ros2_ws/src/batterytest.py (pymavlink ArduPilot dev script, not a package)
+   -> fold into rover_tools during the tidy phase (Task 15).

@@ -1,0 +1,65 @@
+amcl:
+  ros__parameters:
+    use_sim_time: false
+
+    # Particle filter bounds
+    min_particles: 2000
+    max_particles: 6000
+
+    # Motion model noise — high enough that particles spread during motion so
+    # scan matching can pull them back when RF2O/IMU don't perfectly predict.
+    alpha1: 0.5   # rot noise from rot
+    alpha2: 0.3   # rot noise from translation
+    # alpha3: 0.2   # trans noise from translation
+    alpha3: 1.0   # trans noise from translation
+    alpha4: 1.0   # trans noise from rot
+
+    # Laser model
+    laser_model_type: likelihood_field
+    laser_max_range: 12.0
+    laser_min_range: 0.2
+    laser_likelihood_max_dist: 0.5
+    max_beams: 100
+    sigma_hit: 0.15
+    z_hit: 0.8
+    z_rand: 0.2
+    z_max: 0.0
+    z_short: 0.0
+    lambda_short: 0.1
+
+    # Frames
+    base_frame_id: base_link
+    odom_frame_id: odom
+    global_frame_id: map
+    scan_topic: /scan
+    tf_broadcast: true
+    transform_tolerance: 0.5
+
+    # Update thresholds — localize when robot moves this much
+    update_min_d: 0.1
+    update_min_a: 0.1
+    resample_interval: 3
+
+    # Auto-init at (0,0) so map→odom TF exists immediately and Foxglove can
+    # render the map. Override with /initialpose from Foxglove once you can
+    # see where the robot actually is.
+    set_initial_pose: true
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+
+    # Beam skip — ignore a few bad returns
+    do_beamskip: true
+    beam_skip_distance: 0.5
+    beam_skip_threshold: 0.3
+    beam_skip_error_threshold: 0.9
+
+    # Recovery — inject random particles when AMCL gets lost mid-motion.
+    recovery_alpha_fast: 0.05
+    recovery_alpha_slow: 0.005
+    pf_err: 0.05
+    pf_z: 0.99
+    save_pose_rate: 0.5
+    robot_model_type: nav2_amcl::DifferentialMotionModel

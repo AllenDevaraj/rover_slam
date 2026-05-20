@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rover_behaviors</name>
+  <version>0.0.1</version>
+  <description>Reactive autonomy behaviors (line/color following, wall stop/follow, hallway seek, lap completion) producing /cmd_vel.</description>
+  <maintainer email="allendevaraj33333@gmail.com">The2xMan</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <!-- runtime pip dep: simple_pid (wall_stop, no rosdep key) -->
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
