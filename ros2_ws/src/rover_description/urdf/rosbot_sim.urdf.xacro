@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rosbot">
+
+  <!-- ROSbot 2R geometry (body + 4 wheels), bypassing the rosbot macro's control stack -->
+  <xacro:include filename="$(find rosbot_description)/urdf/rosbot/body.urdf.xacro" ns="body"/>
+  <xacro:include filename="$(find rosbot_description)/urdf/rosbot/wheel.urdf.xacro" ns="wheel"/>
+  <xacro:property name="wr" value="0.0425"/>
+  <xacro:body.body wheel_radius="${wr}" namespace=""/>
+  <xacro:wheel.wheel mecanum="false" side="fl" wheel_radius="${wr}"/>
+  <xacro:wheel.wheel mecanum="false" side="fr" wheel_radius="${wr}"/>
+  <xacro:wheel.wheel mecanum="false" side="rl" wheel_radius="${wr}"/>
+  <xacro:wheel.wheel mecanum="false" side="rr" wheel_radius="${wr}"/>
+
+  <!-- LiDAR frame on top cover -> /scan -->
+  <joint name="laser_joint" type="fixed">
+    <parent link="cover_link"/><child link="laser_frame"/>
+    <origin xyz="0 0 0.03" rpy="0 0 0"/>
+  </joint>
+  <link name="laser_frame"/>
+  <gazebo reference="laser_frame">
+    <sensor name="laser" type="gpu_lidar">
+      <topic>scan</topic><gz_frame_id>laser_frame</gz_frame_id>
+      <update_rate>10</update_rate><always_on>1</always_on>
+      <lidar><scan><horizontal><samples>360</samples><resolution>1</resolution>
+        <min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal></scan>
+        <range><min>0.3</min><max>12.0</max><resolution>0.01</resolution></range></lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU -> /imu (imu_link exists in body.urdf.xacro) -->
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu"><topic>imu</topic><gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>50</update_rate><always_on>1</always_on></sensor>
+  </gazebo>
+  <gazebo><plugin filename="ignition-gazebo-imu-system" name="ignition::gazebo::systems::Imu"/></gazebo>
+
+  <!-- Camera -> /camera/color/image_raw (camera_mount_link exists in body.urdf.xacro) -->
+  <gazebo reference="camera_mount_link">
+    <sensor name="color_camera" type="camera"><topic>camera/color/image_raw</topic>
+      <gz_frame_id>camera_mount_link</gz_frame_id><update_rate>20</update_rate><always_on>1</always_on>
+      <camera><horizontal_fov>1.089</horizontal_fov>
+        <image><width>640</width><height>480</height><format>R8G8B8</format></image>
+        <clip><near>0.05</near><far>20.0</far></clip></camera>
+    </sensor>
+  </gazebo>
+
+  <!-- Our DiffDrive on all 4 wheels (left = fl+rl, right = fr+rr) -->
+  <gazebo>
+    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>fl_wheel_joint</left_joint><left_joint>rl_wheel_joint</left_joint>
+      <right_joint>fr_wheel_joint</right_joint><right_joint>rr_wheel_joint</right_joint>
+      <wheel_separation>0.192</wheel_separation><wheel_radius>0.0425</wheel_radius>
+      <topic>/model/rover/cmd_vel</topic><odom_publish_frequency>0</odom_publish_frequency>
+    </plugin>
+    <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+    </plugin>
+  </gazebo>
+</robot>
