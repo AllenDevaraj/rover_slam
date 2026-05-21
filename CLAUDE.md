@@ -44,6 +44,19 @@ runtime libs may be present but the dev headers are required to compile):
 sudo apt install -y libsuitesparse-dev libceres-dev ros-humble-libg2o
 ```
 
+**System runtime dependencies** (the SLAM/nav core needs these — install if missing):
+
+```bash
+sudo apt install -y ros-humble-robot-localization \
+  ros-humble-nav2-map-server ros-humble-nav2-amcl ros-humble-nav2-lifecycle-manager
+```
+
+**Simulation (Gazebo Fortress) dependencies** (for `rover_sim` / `backend:=sim`):
+
+```bash
+sudo apt install -y ros-humble-ros-gz ros-humble-gz-ros2-control   # Fortress (ign gazebo 6) + ROS bridge
+```
+
 **Pip-only runtime deps** (no rosdep keys, install with pip as needed):
 `pyrealsense2` (rover_camera / rover_tools), `pymavlink` (rover_base),
 `simple_pid` (rover_behaviors).
@@ -61,14 +74,34 @@ ros2 launch rover_bringup odom_nav.launch.py              # navigation on odom
 ros2 launch rover_localization localization.launch.py map:=<path/to/map.yaml>
 ```
 
+### Simulation (Gazebo Fortress — no hardware)
+
+```bash
+# Mapping: drive in sim and build a map (camera line-follower on blue tape, or teleop)
+ros2 launch rover_sim sim.launch.py mode:=mapping  drive:=diff driver:=line_follower
+# Planning + execution: load a saved map, set an RViz "2D Goal Pose" -> A* -> pure pursuit
+ros2 launch rover_sim sim.launch.py mode:=planning drive:=diff map:=<path/to/map.yaml>
+#   drive:=diff|ackermann   world:=<file>   driver:=line_follower|teleop|none
+#   headless:=true (gz server only, CI / no display)   x:=/y:=/yaw:= spawn pose
+# Generate a Gazebo world from any saved slam map (co-registered for localization):
+ros2 run rover_sim map2world <map.yaml> <out.world>
+```
+
+The sim only produces `/scan`, `/imu`, `/camera/color/image_raw` and consumes
+`/cmd_vel`; rf2o + EKF + slam_toolbox + A* + pure_pursuit run unchanged. Both a
+DiffDrive and an AckermannSteering model are supported (`drive:=`). Worlds:
+`corridor.world` (blue-tape loop) and `building.world` (generated from the real
+`map_April_27_3_52` map). See `docs/superpowers/specs/2026-05-21-rover-sim-backend-design.md`.
+
 ## Backend contract (swappable)
 
 `/scan`, `/odom`, `/imu`, `/camera/color/image_raw` are produced by the selected
 backend (`real` | `sim` | `bag`); the SLAM / navigation / behavior core consumes
-them and never depends on which backend is active. Only `real` is wired today
-(rplidar + `rover_camera` + `rover_base`, exactly as the old `mal_startup`); `sim`
-(Gazebo via `rover_description`'s `gazebo_control.xacro`) and `bag` (`ros2 bag
-play`) honor the same topic contract and can be added without touching consumers.
+them and never depends on which backend is active. `real` (rplidar +
+`rover_camera` + `rover_base`, exactly as the old `mal_startup`) and `sim`
+(Gazebo Fortress via the `rover_sim` package — `gpu_lidar` + `imu` + `camera` +
+DiffDrive/AckermannSteering) are both wired and honor the same topic contract;
+`bag` (`ros2 bag play`) remains a stub.
 
 ## Notes / known issues (preserved, pre-existing)
 
