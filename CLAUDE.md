@@ -81,7 +81,9 @@ ros2 launch rover_localization localization.launch.py map:=<path/to/map.yaml>
 ros2 launch rover_sim sim.launch.py mode:=mapping  drive:=diff driver:=line_follower
 # Planning + execution: load a saved map, set an RViz "2D Goal Pose" -> A* -> pure pursuit
 ros2 launch rover_sim sim.launch.py mode:=planning drive:=diff map:=<path/to/map.yaml>
-#   drive:=diff|ackermann   world:=<file>   driver:=line_follower|teleop|none
+# Alternate robot model — vendored Husarion ROSbot 2R (same pipeline, our DiffDrive + sensors):
+ros2 launch rover_sim sim.launch.py mode:=mapping  model:=rosbot driver:=teleop
+#   model:=rover|rosbot   drive:=diff|ackermann   world:=<file>   driver:=line_follower|teleop|none
 #   headless:=true (gz server only, CI / no display)   x:=/y:=/yaw:= spawn pose
 # Generate a Gazebo world from any saved slam map (co-registered for localization):
 ros2 run rover_sim map2world <map.yaml> <out.world>
