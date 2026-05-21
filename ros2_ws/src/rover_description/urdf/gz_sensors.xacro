@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 2D LiDAR -> /scan -->
+  <gazebo reference="laser_frame">
+    <sensor name="laser" type="gpu_lidar">
+      <topic>scan</topic>
+      <gz_frame_id>laser_frame</gz_frame_id>
+      <update_rate>10</update_rate>
+      <always_on>1</always_on>
+      <visualize>true</visualize>
+      <lidar>
+        <scan><horizontal><samples>360</samples><resolution>1</resolution>
+          <min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal></scan>
+        <range><min>0.3</min><max>12.0</max><resolution>0.01</resolution></range>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU -> /imu -->
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu">
+      <topic>imu</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>50</update_rate>
+      <always_on>1</always_on>
+    </sensor>
+  </gazebo>
+  <gazebo>
+    <plugin filename="ignition-gazebo-imu-system" name="ignition::gazebo::systems::Imu"/>
+  </gazebo>
+
+  <!-- Forward camera -> /camera/color/image_raw (sees floor tape in lower FOV) -->
+  <gazebo reference="camera_link">
+    <sensor name="color_camera" type="camera">
+      <topic>camera/color/image_raw</topic>
+      <gz_frame_id>camera_link</gz_frame_id>
+      <update_rate>20</update_rate>
+      <always_on>1</always_on>
+      <camera>
+        <horizontal_fov>1.089</horizontal_fov>
+        <image><width>640</width><height>480</height><format>R8G8B8</format></image>
+        <clip><near>0.05</near><far>20.0</far></clip>
+      </camera>
+    </sensor>
+  </gazebo>
+</robot>

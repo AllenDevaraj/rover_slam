@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <gazebo>
+    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>rear_left_wheel_joint</left_joint>
+      <right_joint>rear_right_wheel_joint</right_joint>
+      <wheel_separation>0.175</wheel_separation>
+      <wheel_radius>0.034</wheel_radius>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <topic>/model/rover/cmd_vel</topic>
+      <!-- Odometry/TF intentionally NOT published here; rf2o+fake_odom+EKF own odom. -->
+      <odom_publish_frequency>0</odom_publish_frequency>
+    </plugin>
+  </gazebo>
+</robot>
