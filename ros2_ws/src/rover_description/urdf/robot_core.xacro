@@ -51,7 +51,7 @@
     <link
         name="base_link" />
 
-    <!-- BASE_FOOTPRINT LINK -->Select <joint name="base_footprint_joint" type="fixed">
+    <!-- BASE_FOOTPRINT LINK --><joint name="base_footprint_joint" type="fixed">
         <parent link="base_link" />
         <child link="base_footprint" />
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -163,7 +163,7 @@
         <origin xyz="${wheel_base} -${front_wheel_track/2} 0" rpy="0 0 ${pi/2}" />
         <axis xyz="0 0 1" />
         <dynamics damping="0.2" />
-        <limit lower="-0.454" upper="0.384" effort="100.0" velocity="0.0" />
+        <limit lower="-0.454" upper="0.384" effort="100.0" velocity="2.0" />
     </joint>
 
     <link
@@ -195,7 +195,7 @@
         <origin xyz="${wheel_base} ${front_wheel_track/2} 0" rpy="0 0 ${pi/2}" />
         <axis xyz="0 0 1" />
         <dynamics damping="0.2" />
-        <limit lower="-0.384" upper="0.454" effort="100.0" velocity="0.0" />
+        <limit lower="-0.384" upper="0.454" effort="100.0" velocity="2.0" />
     </joint>
 
     <link
