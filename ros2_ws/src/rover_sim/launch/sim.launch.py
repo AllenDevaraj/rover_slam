@@ -4,6 +4,15 @@ Swaps the hardware layer for Gazebo and sets use_sim_time:=true everywhere.
 
   ros2 launch rover_sim sim.launch.py mode:=mapping  drive:=diff world:=<file> driver:=line_follower
   ros2 launch rover_sim sim.launch.py mode:=planning drive:=diff world:=<file> map:=<yaml>
+
+Args:
+  mode     : mapping | planning
+  drive    : diff | ackermann
+  world    : world file path (empty -> corridor.world)
+  driver   : line_follower | teleop | none
+  map      : saved map yaml (planning mode; empty -> map_April_27_3_52.yaml)
+  headless : true -> gz server only (no GUI); also disables RViz
+  rviz     : true -> launch RViz (ignored when headless)
 """
 import os
 from ament_index_python.packages import get_package_share_directory
@@ -23,6 +32,9 @@ def launch_setup(context, *args, **kwargs):
     world = LaunchConfiguration('world').perform(context) or \
         os.path.join(rover_sim, 'worlds', 'corridor.world')
     drive = LaunchConfiguration('drive')
+    headless = LaunchConfiguration('headless').perform(context)
+    show_rviz = LaunchConfiguration('rviz').perform(context).lower() in ('true', '1', 'yes') \
+        and headless.lower() not in ('true', '1', 'yes')
 
     sim_time = {'use_sim_time': True}
     ekf_config = os.path.join(get_package_share_directory('rover_state_estimation'),
@@ -31,7 +43,7 @@ def launch_setup(context, *args, **kwargs):
     spawn = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
             [FindPackageShare('rover_sim'), 'launch', 'spawn.launch.py'])),
-        launch_arguments={'drive': drive, 'world': world}.items(),
+        launch_arguments={'drive': drive, 'world': world, 'headless': headless}.items(),
     )
 
     rf2o = Node(
@@ -104,9 +116,10 @@ def launch_setup(context, *args, **kwargs):
                           name='rover_teleop', output='screen',
                           remappings=[('cmd_vel', '/cmd_vel_teleop')]))
 
-    nodes.append(Node(package='rviz2', executable='rviz2', name='rviz2', output='log',
-                      arguments=['-d', os.path.join(rover_sim, 'rviz', 'sim.rviz')],
-                      parameters=[sim_time]))
+    if show_rviz:
+        nodes.append(Node(package='rviz2', executable='rviz2', name='rviz2', output='log',
+                          arguments=['-d', os.path.join(rover_sim, 'rviz', 'sim.rviz')],
+                          parameters=[sim_time]))
     return nodes
 
 
@@ -118,5 +131,7 @@ def generate_launch_description():
         DeclareLaunchArgument('driver', default_value='line_follower',
                               choices=['line_follower', 'teleop', 'none']),
         DeclareLaunchArgument('map', default_value=''),
+        DeclareLaunchArgument('headless', default_value='false'),
+        DeclareLaunchArgument('rviz', default_value='true'),
         OpaqueFunction(function=launch_setup),
     ])
