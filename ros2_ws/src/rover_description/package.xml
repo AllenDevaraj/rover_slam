@@ -12,6 +12,8 @@
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>
+  <!-- rosbot_sim.urdf.xacro includes the vendored Husarion ROSbot 2R description -->
+  <exec_depend>rosbot_description</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

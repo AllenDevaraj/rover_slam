@@ -38,10 +38,15 @@ def launch_setup(context, *args, **kwargs):
 
     gz_args = world + ' -r' + (' -s --headless-rendering' if headless else '')
 
-    urdf_xacro = os.path.join(rover_desc, 'urdf', 'robot.urdf.xacro')
-    robot_description = ParameterValue(
-        Command(['xacro ', urdf_xacro, ' sim_mode:=true', ' drive_model:=', drive]),
-        value_type=str)
+    model = LaunchConfiguration('model').perform(context)
+    if model == 'rosbot':
+        urdf_xacro = os.path.join(rover_desc, 'urdf', 'rosbot_sim.urdf.xacro')
+        robot_description = ParameterValue(Command(['xacro ', urdf_xacro]), value_type=str)
+    else:
+        urdf_xacro = os.path.join(rover_desc, 'urdf', 'robot.urdf.xacro')
+        robot_description = ParameterValue(
+            Command(['xacro ', urdf_xacro, ' sim_mode:=true', ' drive_model:=', drive]),
+            value_type=str)
 
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
@@ -71,6 +76,7 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     return LaunchDescription([
+        DeclareLaunchArgument('model', default_value='rover', choices=['rover', 'rosbot']),
         DeclareLaunchArgument('drive', default_value='diff', choices=['diff', 'ackermann']),
         DeclareLaunchArgument('world', default_value=''),
         DeclareLaunchArgument('headless', default_value='false'),

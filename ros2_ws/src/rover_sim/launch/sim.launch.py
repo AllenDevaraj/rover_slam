@@ -43,7 +43,8 @@ def launch_setup(context, *args, **kwargs):
     spawn = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
             [FindPackageShare('rover_sim'), 'launch', 'spawn.launch.py'])),
-        launch_arguments={'drive': drive, 'world': world, 'headless': headless,
+        launch_arguments={'model': LaunchConfiguration('model'),
+                          'drive': drive, 'world': world, 'headless': headless,
                           'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'),
                           'yaw': LaunchConfiguration('yaw')}.items(),
     )
@@ -128,6 +129,7 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('mode', default_value='mapping', choices=['mapping', 'planning']),
+        DeclareLaunchArgument('model', default_value='rover', choices=['rover', 'rosbot']),
         DeclareLaunchArgument('drive', default_value='diff', choices=['diff', 'ackermann']),
         DeclareLaunchArgument('world', default_value=''),
         DeclareLaunchArgument('driver', default_value='line_follower',
