@@ -43,7 +43,9 @@ def launch_setup(context, *args, **kwargs):
     spawn = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution(
             [FindPackageShare('rover_sim'), 'launch', 'spawn.launch.py'])),
-        launch_arguments={'drive': drive, 'world': world, 'headless': headless}.items(),
+        launch_arguments={'drive': drive, 'world': world, 'headless': headless,
+                          'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'),
+                          'yaw': LaunchConfiguration('yaw')}.items(),
     )
 
     rf2o = Node(
@@ -133,5 +135,8 @@ def generate_launch_description():
         DeclareLaunchArgument('map', default_value=''),
         DeclareLaunchArgument('headless', default_value='false'),
         DeclareLaunchArgument('rviz', default_value='true'),
+        DeclareLaunchArgument('x', default_value='0.0'),
+        DeclareLaunchArgument('y', default_value='0.0'),
+        DeclareLaunchArgument('yaw', default_value='0.0'),
         OpaqueFunction(function=launch_setup),
     ])

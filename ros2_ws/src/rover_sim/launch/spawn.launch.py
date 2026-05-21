@@ -7,6 +7,7 @@ Args:
   drive    : diff | ackermann
   world    : world file path (empty -> corridor.world)
   headless : true  -> run the gz server only (no GUI), for CI / no-display machines
+  x,y,yaw  : initial spawn pose (default 0,0,0)
 """
 import os
 from ament_index_python.packages import get_package_share_directory
@@ -27,6 +28,9 @@ def launch_setup(context, *args, **kwargs):
     world = LaunchConfiguration('world').perform(context) or \
         os.path.join(rover_sim, 'worlds', 'corridor.world')
     headless = LaunchConfiguration('headless').perform(context).lower() in ('true', '1', 'yes')
+    sx = LaunchConfiguration('x').perform(context)
+    sy = LaunchConfiguration('y').perform(context)
+    syaw = LaunchConfiguration('yaw').perform(context)
 
     # Help gz find world-referenced resources (worlds use inline geometry, but harmless).
     os.environ['IGN_GAZEBO_RESOURCE_PATH'] = \
@@ -50,7 +54,8 @@ def launch_setup(context, *args, **kwargs):
     )
     spawn = Node(
         package='ros_gz_sim', executable='create', output='screen',
-        arguments=['-topic', 'robot_description', '-name', 'rover', '-z', '0.1'],
+        arguments=['-topic', 'robot_description', '-name', 'rover',
+                   '-x', sx, '-y', sy, '-z', '0.1', '-Y', syaw],
     )
     bridge = Node(
         package='ros_gz_bridge', executable='parameter_bridge', output='screen',
@@ -69,5 +74,8 @@ def generate_launch_description():
         DeclareLaunchArgument('drive', default_value='diff', choices=['diff', 'ackermann']),
         DeclareLaunchArgument('world', default_value=''),
         DeclareLaunchArgument('headless', default_value='false'),
+        DeclareLaunchArgument('x', default_value='0.0'),
+        DeclareLaunchArgument('y', default_value='0.0'),
+        DeclareLaunchArgument('yaw', default_value='0.0'),
         OpaqueFunction(function=launch_setup),
     ])
