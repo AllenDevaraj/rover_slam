@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+  <world name="corridor">
+    <plugin filename="ignition-gazebo-physics-system" name="ignition::gazebo::systems::Physics"/>
+    <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="ignition-gazebo-scene-broadcaster-system" name="ignition::gazebo::systems::SceneBroadcaster"/>
+    <plugin filename="ignition-gazebo-user-commands-system" name="ignition::gazebo::systems::UserCommands"/>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows><pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse><specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane"><static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><plane><normal>0 0 1</normal><size>40 40</size></plane></geometry></collision>
+        <visual name="v"><geometry><plane><normal>0 0 1</normal><size>40 40</size></plane></geometry>
+          <material><ambient>0.85 0.85 0.85 1</ambient><diffuse>0.85 0.85 0.85 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Outer ring walls (8x6 m room), 1 m tall, 0.1 m thick -->
+    <model name="walls"><static>true</static>
+      <link name="n"><pose>0  3 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>8 0.1 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>8 0.1 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="s"><pose>0 -3 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>8 0.1 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>8 0.1 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="e"><pose>4  0 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.1 6 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.1 6 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="w"><pose>-4 0 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.1 6 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.1 6 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <!-- Inner block (2.4x1.4 m) to force a ring corridor -->
+      <link name="in_n"><pose>0  0.7 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>2.4 0.1 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>2.4 0.1 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="in_s"><pose>0 -0.7 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>2.4 0.1 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>2.4 0.1 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="in_e"><pose>1.2 0 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.1 1.4 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.1 1.4 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+      <link name="in_w"><pose>-1.2 0 0.5 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.1 1.4 1</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.1 1.4 1</size></box></geometry><material><diffuse>0.7 0.7 0.7 1</diffuse></material></visual></link>
+    </model>
+
+    <!-- Blue tape loop (mid-corridor rectangle), thin flat strips on the floor.
+         Right-angle corners. Color RGB (0,153,255) = (0, 0.6, 1). Emissive so the camera sees it. -->
+    <model name="blue_tape"><static>true</static>
+      <link name="t_n"><pose>0  2.0 0.005 0 0 0</pose>
+        <visual name="v"><geometry><box><size>5.0 0.08 0.01</size></box></geometry>
+          <material><ambient>0 0.6 1 1</ambient><diffuse>0 0.6 1 1</diffuse><emissive>0 0.45 0.8 1</emissive></material></visual></link>
+      <link name="t_s"><pose>0 -2.0 0.005 0 0 0</pose>
+        <visual name="v"><geometry><box><size>5.0 0.08 0.01</size></box></geometry>
+          <material><ambient>0 0.6 1 1</ambient><diffuse>0 0.6 1 1</diffuse><emissive>0 0.45 0.8 1</emissive></material></visual></link>
+      <link name="t_e"><pose>2.5 0 0.005 0 0 0</pose>
+        <visual name="v"><geometry><box><size>0.08 4.0 0.01</size></box></geometry>
+          <material><ambient>0 0.6 1 1</ambient><diffuse>0 0.6 1 1</diffuse><emissive>0 0.45 0.8 1</emissive></material></visual></link>
+      <link name="t_w"><pose>-2.5 0 0.005 0 0 0</pose>
+        <visual name="v"><geometry><box><size>0.08 4.0 0.01</size></box></geometry>
+          <material><ambient>0 0.6 1 1</ambient><diffuse>0 0.6 1 1</diffuse><emissive>0 0.45 0.8 1</emissive></material></visual></link>
+    </model>
+  </world>
+</sdf>
