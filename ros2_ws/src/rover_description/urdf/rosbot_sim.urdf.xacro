@@ -38,6 +38,8 @@
   <gazebo reference="camera_mount_link">
     <sensor name="color_camera" type="camera"><topic>camera/color/image_raw</topic>
       <gz_frame_id>camera_mount_link</gz_frame_id><update_rate>20</update_rate><always_on>1</always_on>
+      <!-- tilt the camera down ~20 deg (pitch about +Y) so the floor + blue tape fill the lower frame -->
+      <pose>0 0 0 0 0.35 0</pose>
       <camera><horizontal_fov>1.089</horizontal_fov>
         <image><width>640</width><height>480</height><format>R8G8B8</format></image>
         <clip><near>0.05</near><far>20.0</far></clip></camera>
